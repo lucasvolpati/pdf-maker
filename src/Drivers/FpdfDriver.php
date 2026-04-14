@@ -8,14 +8,14 @@ use Fpdf\Fpdf;
 
 class FpdfDriver implements PdfMaker
 {
-    public function make(Data $data, array $crtObjects): array
+    public function make(array $crtObjects): array
     {
         $config = $this->getConfig();
         $response = [];
 
         foreach ($crtObjects as $cert) {
             $fpdf = new Fpdf();
-            
+                  
             $fpdf->AddPage('L');
             $fpdf->SetLineWidth(1);
             $fpdf->Image($cert->template,0,0,295);
@@ -28,7 +28,7 @@ class FpdfDriver implements PdfMaker
             // Person name
             $fpdf->SetFont($config->personName->fontName, '', $config->personName->fontSize); 
             $fpdf->SetXY($config->personName->x, $config->personName->y); 
-            $fpdf->MultiCell(265, 10, mb_convert_encoding($data->personName, 'ISO-8859-1', 'UTF-8'), '', 'C', 0); 
+            $fpdf->MultiCell(265, 10, mb_convert_encoding($cert->data->personName, 'ISO-8859-1', 'UTF-8'), '', 'C', 0); 
 
             // Certification text
             $fpdf->SetFont($config->certificationText->fontName, '', $config->certificationText->fontSize);
@@ -38,21 +38,21 @@ class FpdfDriver implements PdfMaker
             // Certification Date
             $fpdf->SetFont($config->certificationDate->fontName, '', $config->certificationDate->fontSize);
             $fpdf->SetXY($config->certificationDate->x, $config->certificationDate->y); 
-            $fpdf->MultiCell(265, 30, mb_convert_encoding($data->strDate, 'ISO-8859-1', 'UTF-8'), '', 'C', 0);
+            $fpdf->MultiCell(265, 30, mb_convert_encoding($cert->data->strDate, 'ISO-8859-1', 'UTF-8'), '', 'C', 0);
 
             //Person signature name
             $fpdf->SetFont($config->signatureName->fontName, '', $config->signatureName->fontSize);
             $fpdf->SetXY($config->signatureName->x, $config->signatureName->y); 
-            $fpdf->MultiCell(265, 30, mb_convert_encoding($data->personName, 'ISO-8859-1', 'UTF-8'), '', 'C', 0);
+            $fpdf->MultiCell(265, 30, mb_convert_encoding($cert->data->personName, 'ISO-8859-1', 'UTF-8'), '', 'C', 0);
 
             //Person signature document (CPF)
             $fpdf->SetFont($config->signatureDocument->fontName, '', $config->signatureDocument->fontSize);
             $fpdf->SetXY($config->signatureDocument->x, $config->signatureDocument->y); 
-            $fpdf->MultiCell(265, 30, 'CPF: ' . mb_convert_encoding($data->document, 'ISO-8859-1', 'UTF-8'), '', 'C', 0);
+            $fpdf->MultiCell(265, 30, 'CPF: ' . mb_convert_encoding($cert->data->document, 'ISO-8859-1', 'UTF-8'), '', 'C', 0);
 
             $pdfdoc = $fpdf->Output('', 'S');
 
-            $name = str_replace(" ", '-', $data->personName);
+            $name = str_replace(" ", '-', $cert->data->personName);
 
             $nameFormatted = "storage/generated/{$name}-{$cert->name}.pdf";
             $fpdf->Output($nameFormatted,'F');

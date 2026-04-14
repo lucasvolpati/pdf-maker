@@ -195,20 +195,32 @@
 
         $crtObjects = [];
 
-        foreach ($certificates as $crt) {
+        foreach ($certificates as $i => $crt) {
+            if ($certificates[$i]['name'] === 'nr35') {
+                $certificates[$i]['data'] = clone $certificates[$i]['data'];
+
+                $certificates[$i]['data']->finalDate = new DateTime($formData['final_date'])->add(new DateInterval('P1D'))->format('d/m/Y');
+
+                $formatter = new IntlDateFormatter('pt_BR', IntlDateFormatter::FULL, IntlDateFormatter::NONE);
+                $formatter->setPattern('d \'de\' MMMM \'de\' yyyy');
+                $certificates[$i]['data']->strDate = $formatter->format(new DateTime(implode('-', array_reverse(explode('/', $certificates[$i]['data']->finalDate)))));
+
+            }
+
             $crtObjects[] = new Certificate(
-                data: $crt['data'],
-                name: $crt['name'],
-                workload: $crt['workload'],
-                template: $crt['template'],
-                certificationText: $crt['certificationText'],
-                companyIntro: $crt['companyIntro']
+                data: $certificates[$i]['data'],
+                name: $certificates[$i]['name'],
+                workload: $certificates[$i]['workload'],
+                template: $certificates[$i]['template'],
+                certificationText: $certificates[$i]['certificationText'],
+                companyIntro: $certificates[$i]['companyIntro']
             );
         }
+        // print_r($crtObjects);
 
         $certGen = new Generator(new FpdfDriver())
             ->setDocuments($crtObjects)
-            ->make($data);
+            ->make();
         
         echo "<pre>";
         print_r($certGen);

@@ -14,9 +14,9 @@ class Generator
     )
     {}
 
-    public function make(Data $data): array
+    public function make(): array
     {
-        return $this->pdfMaker->make($data, $this->arrDocuments);
+        return $this->pdfMaker->make($this->arrDocuments);
     }
 
     public function setDocuments(array $arrDocuments): self

@@ -6,5 +6,5 @@ use PdfMaker\Certificates\Data;
 
 interface PdfMaker
 {
-    public function make(Data $data, array $crtObjects): array;
+    public function make(array $crtObjects): array;
 }
